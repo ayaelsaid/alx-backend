@@ -4,27 +4,25 @@
 task5: lfu_cache
 """
 
-
 from base_caching import BaseCaching
 from collections import defaultdict, OrderedDict
 
 
 class LFUCache(BaseCaching):
     """
-    class LFUCache that inherits from BaseCaching
+    Class LFUCache that inherits from BaseCaching and implements
+    LFU caching.
     """
 
     def __init__(self):
-        """ Initialize the LFU cache
-        """
+        """Initialize the LFU cache."""
         super().__init__()
         self.cache_data = {}
         self.freq = defaultdict(int)
         self.order = defaultdict(OrderedDict)
 
     def put(self, key, item):
-        """ Add an item in the cache
-        """
+        """Add an item to the cache."""
         if key is None or item is None:
             return
 
@@ -50,8 +48,7 @@ class LFUCache(BaseCaching):
             self.order[1][key] = None 
 
     def get(self, key):
-        """ Get an item by key
-        """
+        """Get an item by key."""
         if key is None:
             return None
 
@@ -64,4 +61,4 @@ class LFUCache(BaseCaching):
         freq = self.freq[key]
         self.order[freq][key] = None
 
-        return self.cache_data.get(key)
+        return self.cache_data[key]
