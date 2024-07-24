@@ -25,10 +25,11 @@ class LIFOCache(BaseCaching):
         if key is None or item is None:
             return
 
-        if key not in self.cache_data and len(self.cache_data) >= BaseCaching.MAX_ITEMS:
-            last_key = self.order.pop()  # Remove the last item added
-            del self.cache_data[last_key]
-            print(f"DISCARD: {last_key}")
+        if key not in self.cache_data:
+            if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
+                last_key = self.order.pop()  # Remove the last item added
+                del self.cache_data[last_key]
+                print(f"DISCARD: {last_key}")
 
         if key not in self.cache_data:
             self.order.append(key)
