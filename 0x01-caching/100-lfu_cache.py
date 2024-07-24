@@ -21,17 +21,21 @@ class LFUCache(BaseCaching):
         self.freq = defaultdict(int)
         self.order = defaultdict(OrderedDict)
 
+    def __reorder_items(self, key):
+        """Reorders the items based on frequency."""
+        freq = self.freq[key]
+        self.order[freq].pop(key)
+        self.order[freq + 1][key] = None
+
     def put(self, key, item):
         """Add an item to the cache."""
         if key is None or item is None:
             return
 
         if key in self.cache_data:
-            freq = self.freq[key]
-            self.order[freq].pop(key)
+            # Update existing item frequency
+            self.__reorder_items(key)
             self.freq[key] += 1
-            freq = self.freq[key]
-            self.order[freq][key] = None
         else:
             if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
                 min_freq = min(self.freq.values())
@@ -49,16 +53,11 @@ class LFUCache(BaseCaching):
 
     def get(self, key):
         """Get an item by key."""
-        if key is None:
+        if key is None or key not in self.cache_data:
             return None
 
-        if key not in self.cache_data:
-            return None
-
-        freq = self.freq[key]
-        self.order[freq].pop(key)
+        # Update the item's frequency
+        self.__reorder_items(key)
         self.freq[key] += 1
-        freq = self.freq[key]
-        self.order[freq][key] = None
 
         return self.cache_data[key]
