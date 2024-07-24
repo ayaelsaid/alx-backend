@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+
 """
-task-1
+task-1: 1-fifo_cache.py
 """
 
 
@@ -8,9 +9,9 @@ from base_caching import BaseCaching
 
 
 class FIFOCache(BaseCaching):
-  """
-  class FIFOCache that inherits from BaseCaching
-  """
+    """
+    class FIFOCache that inherits from BaseCaching
+    """
 
     def __init__(self):
         """ Initialize the FIFO cache
@@ -39,4 +40,5 @@ class FIFOCache(BaseCaching):
         """
         if key is None or key not in self.cache_data:
             return None
-      
+
+        return self.cache_data.get(key)
