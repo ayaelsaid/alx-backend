@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-task-1: 1-fifo_cache.py
+task-1: fifo_cache
 """
 
 
