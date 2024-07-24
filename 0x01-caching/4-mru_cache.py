@@ -4,23 +4,22 @@
 task4: mru_cache
 """
 
-
 from base_caching import BaseCaching
 
 
 class MRUCache(BaseCaching):
     """
-    class MRUCache that inherits from BaseCaching
+    Class MRUCache that inherits from BaseCaching.
     """
 
     def __init__(self):
-        """ Initialize the MRU cache
+        """ Initialize the MRU cache.
         """
         super().__init__()
         self.order = []
 
     def put(self, key, item):
-        """ Add an item in the cache
+        """ Add an item in the cache.
         """
         if key is None or item is None:
             return
@@ -36,7 +35,7 @@ class MRUCache(BaseCaching):
         self.cache_data[key] = item
 
     def get(self, key):
-        """ Get an item by key
+        """ Get an item by key.
         """
         if key is None or key not in self.cache_data:
             return None
