@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Create a class BasicCache that inherits from BaseCaching"""
+"""
+task-0
+"""
+
+
+from base_caching import BaseCaching
 
 
 class BasicCache(BaseCaching):
-
+    """class BasicCache that inherits from BaseCaching"""
 
     def put(self, key, item):
         """ Add an item in the cache
