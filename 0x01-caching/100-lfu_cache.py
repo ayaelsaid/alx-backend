@@ -49,7 +49,7 @@ class LFUCache(BaseCaching):
 
             self.cache_data[key] = item
             self.freq[key] = 1
-            self.order[1][key] = None 
+            self.order[1][key] = None
 
     def get(self, key):
         """Get an item by key."""
