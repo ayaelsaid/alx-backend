@@ -10,14 +10,18 @@ client.on('error', (err) => {
 });
 function setNewSchool(schoolName, value){
   client.set(schoolName, value, redis.print)
+}
 function displaySchoolValue(schoolName){
       client.get(schoolName, (err,reply) => {
         if(err) throw err;
         else {
         console.log('reply: ${reply}');
         console.log(${schoolName});
-        }
+	}
         client.quit();
 
       });
 }
+displaySchoolValue('Holberton');
+setNewSchool('HolbertonSanFrancisco', '100');
+displaySchoolValue('HolbertonSanFrancisco');
