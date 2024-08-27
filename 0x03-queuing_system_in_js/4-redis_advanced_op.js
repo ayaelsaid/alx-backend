@@ -1,33 +1,30 @@
-import redis from 'redis'
+import redis from 'redis';
 
-const client = redis.createClient()
+const client = redis.createClient();
 
 client.on('ready', () => {
-	console.log('Redis client connected to the server');
+  console.log('Redis client connected to the server');
 });
-client.on('error', (err) => {
-	  console.error('Redis client not connected to the server: ', err);
-});
-client.hset('HolbertonSchools', 
-  'Portland', '50',
-  'Seattle', '80',
-  'New York', '20',
-  'Bogota', '20',
-  'Cali', '40',
-  'Paris', '2',
-  (err, reply) => { 
-    if (err) {
-      console.error('Error setting hash:', err);
-    } else {
-      console.log('Reply: ', reply);
-    }
-  };
-);
-client.hgetall('HolbertonSchools', (err,reply) => {
-        if(err) throw err;
-        else {
-        console.log(reply);
-	}
-        client.quit();
 
-      });
+client.on('error', (err) => {
+  console.error('Redis client not connected to the server: ', err);
+});
+const fields = [
+  { key: 'Portland', value: '50' },
+  { key: 'Seattle', value: '80' },
+  { key: 'New York', value: '20' },
+  { key: 'Bogota', value: '20' },
+  { key: 'Cali', value: '40' },
+  { key: 'Paris', value: '2' }
+];
+fields.forEach(field => {
+  client.hset('HolbertonSchools', field.key, field.value, redis.print);
+});
+client.hgetall('HolbertonSchools', (err, reply) => {
+  if (err) {
+    console.error('Error getting hash:', err);
+  } else {
+    console.log('Hash contents:', reply);
+  }
+  client.quit();
+});
