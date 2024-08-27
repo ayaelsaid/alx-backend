@@ -15,7 +15,12 @@ client.hset('HolbertonSchools',
   'Bogota', '20',
   'Cali', '40',
   'Paris', '2',
-  redis.print
+  (err, reply) => { 
+    if (err) {
+      console.error('Error setting hash:', err);
+    } else {
+      console.log('Reply: ', reply);
+    }
 );
 client.hgetall('HolbertonSchools', (err,reply) => {
         if(err) throw err;
