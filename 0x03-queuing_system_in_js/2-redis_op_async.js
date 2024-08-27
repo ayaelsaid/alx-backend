@@ -25,7 +25,7 @@ try {
 async function displaySchoolValue(schoolName) {
   try {
     const reply = await asyncGet(schoolName);
-    console.log(`reply);
+    console.log(reply);
   } catch (err) {
     console.error('Error getting key:', err);
   } finally {
