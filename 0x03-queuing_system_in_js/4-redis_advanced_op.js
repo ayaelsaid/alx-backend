@@ -25,4 +25,3 @@ client.hgetall('HolbertonSchools', (err,reply) => {
         client.quit();
 
       });
-}
