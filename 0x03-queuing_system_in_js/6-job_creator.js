@@ -5,9 +5,9 @@ const data = {
   phoneNumber: '1234567890',
   message: 'Hello, this is a test notification.'
 };
-const push_notification_code = kue.createQueue();
+const queue = kue.createQueue();
 
-const job = push_notification_code.create('notification', {
+const job = queue.create('push_notification_code', {
   to: data.phoneNumber,
   message: data.message
 }).save((err) => {
@@ -18,10 +18,10 @@ const job = push_notification_code.create('notification', {
   }
 });
 
-push_notification_code.on('job complete', (id) => {
+queue.on('job complete', (id) => {
   console.log('Job complete with ID:', id);
 });
 
-push_notification_code.on('error', (err) => {
+queue.on('error', (err) => {
   console.error('Notification job failed:', err);
 });
