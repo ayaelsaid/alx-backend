@@ -16,7 +16,7 @@ function displaySchoolValue(schoolName){
         if(err) throw err;
         else {
         console.log('reply: ${reply}');
-        console.log(${schoolName});
+        console.log(schoolName);
 	}
         client.quit();
 
