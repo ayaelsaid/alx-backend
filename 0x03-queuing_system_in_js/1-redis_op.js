@@ -15,8 +15,7 @@ function displaySchoolValue(schoolName){
       client.get(schoolName, (err,reply) => {
         if(err) throw err;
         else {
-        console.log('reply: ${reply}');
-        console.log(schoolName);
+        console.log(reply);
 	}
         client.quit();
 
