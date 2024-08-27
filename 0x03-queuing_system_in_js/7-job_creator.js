@@ -48,7 +48,7 @@ const jobs = [
 ];
 
 const queue = kue.createQueue();
-});
+
 jobs.forEach(jobData => {
   const job = queue.create('push_notification_code_2', {
     phoneNumber: jobData.phoneNumber,
