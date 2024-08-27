@@ -8,16 +8,14 @@ if (blacklisted.includes(phoneNumber)) {
     console.error(`Error: ${errorMsg}`);
     
     return done(new Error(errorMsg));
-           }
-  else {
+  } else {
     job.progress(50);
     console.log(`Sending notification to ${phoneNumber}, with message: ${message}`);
-  }
-  
+    
     setTimeout(() => {
       job.progress(100);
       console.log(`Notification sent to ${phoneNumber}`);
-      done(); 
+      done();
     }, 2000);
   }
 }
