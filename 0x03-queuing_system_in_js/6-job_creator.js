@@ -8,7 +8,7 @@ const data = {
 const queue = kue.createQueue();
 
 const job = queue.create('push_notification_code', {
-  to: data.phoneNumber,
+  phoneNumber: data.phoneNumber,
   message: data.message
 }).save((err) => {
   if (err) {
