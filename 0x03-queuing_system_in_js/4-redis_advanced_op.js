@@ -21,6 +21,7 @@ client.hset('HolbertonSchools',
     } else {
       console.log('Reply: ', reply);
     }
+  };
 );
 client.hgetall('HolbertonSchools', (err,reply) => {
         if(err) throw err;
