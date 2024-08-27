@@ -14,11 +14,6 @@ if (blacklisted.includes(phoneNumber)) {
     job.progress(50);
     console.log(`Sending notification to ${phoneNumber}, with message: ${message}`);
     
-    setTimeout(() => {
-      job.progress(100);
-      console.log(`Notification sent to ${phoneNumber}`);
-      done();
-    }, 2000);
   }
 }
 
