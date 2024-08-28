@@ -3,14 +3,17 @@ import redis from 'redis';
 import { promisify } from 'util';
 import kue from 'kue';
 
+// Initialize Redis client and Kue queue
 const client = redis.createClient();
 const queue = kue.createQueue();
 const app = express();
 const PORT = 1245;
 
+// Promisify Redis client methods
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 
+// Function to set the number of available seats
 async function reserveSeat(number) {
   try {
     await setAsync('available_seats', number);
@@ -20,6 +23,7 @@ async function reserveSeat(number) {
   }
 }
 
+// Function to get the current number of available seats
 async function getCurrentAvailableSeats() {
   try {
     const seats = await getAsync('available_seats');
@@ -30,10 +34,12 @@ async function getCurrentAvailableSeats() {
   }
 }
 
+// Handle Redis errors
 client.on('error', (err) => {
   console.error('Redis client error:', err);
 });
 
+// Initialize the application and set initial seats
 (async () => {
   try {
     await reserveSeat(50);
@@ -46,6 +52,7 @@ client.on('error', (err) => {
 
 let reservationEnabled = true;
 
+// Endpoint to get the current number of available seats
 app.get('/available_seats', async (req, res) => {
   try {
     const allAvailableSeats = await getCurrentAvailableSeats();
@@ -62,13 +69,16 @@ app.get('/available_seats', async (req, res) => {
   }
 });
 
+// Endpoint to reserve a seat
 app.get('/reserve_seat', async (req, res) => {
   try {
     if (!reservationEnabled) {
       return res.status(403).json({ "status": "Reservations are blocked" });
     }
 
-    const job = queue.create('reserve_seat').save((err) => {
+    const job = queue.create('reserve_seat', {
+      reservedSeatsNumber: 1
+    }).save((err) => {
       if (err) {
         return res.status(500).json({ "status": "Reservation failed" });
       } else {
@@ -90,25 +100,27 @@ app.get('/reserve_seat', async (req, res) => {
   }
 });
 
+// Process the reserve_seat job
 queue.process('reserve_seat', async (job, done) => {
   try {
     const allAvailableSeats = await getCurrentAvailableSeats();
-    
+    console.log('Available seats before reservation:', allAvailableSeats);
+
     if (allAvailableSeats === 0) {
       done(new Error("Reservations are blocked"));
       return;
     }
-console.log('allAvailableSeats in process: ', allAvailableSeats)
 
-    const newAvailableSeats = allAvailableSeats - 1;
+    const reservedSeatsNumber = job.data.reservedSeatsNumber;
+    const newAvailableSeats = allAvailableSeats - reservedSeatsNumber;
 
     if (newAvailableSeats < 0) {
       done(new Error("Not enough seats available"));
       return;
     }
-console.log('newAvailableSeats is: ', newAvailableSeats)
-   const new = await reserveSeat(newAvailableSeats);
-console.log('arfter set newAvailableSeats is: ', new)
+
+    await reserveSeat(newAvailableSeats);
+    console.log('Available seats after reservation:', newAvailableSeats);
 
     done();
   } catch (err) {
@@ -117,6 +129,7 @@ console.log('arfter set newAvailableSeats is: ', new)
   }
 });
 
+// Endpoint to check queue processing status
 app.get('/process', async (req, res) => {
   try {
     res.json({ "status": "Queue processing" });
@@ -126,6 +139,7 @@ app.get('/process', async (req, res) => {
   }
 });
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
