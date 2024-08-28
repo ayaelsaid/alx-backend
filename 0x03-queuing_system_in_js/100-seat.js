@@ -48,37 +48,35 @@ let reservationEnabled = true;
 
 app.get('/available_seats', async (req, res) => {
   try {
-    const availableSeats = await getCurrentAvailableSeats();
-    if (availableSeats === 0) {
+    const allAvailableSeats = await getCurrentAvailableSeats();
+    
+    if (!reservationEnabled || allAvailableSeats === 0) {
       reservationEnabled = false;
+      return res.status(403).json({ "status": "Reservations are blocked" });
     }
-    res.json({ numberOfAvailableSeats: availableSeats });
+
+    res.json({ numberOfAvailableSeats: allAvailableSeats });
   } catch (err) {
     console.error('Error retrieving available seats:', err);
     res.status(500).json({ error: 'Failed to retrieve available seats' });
   }
 });
 
-});
 app.get('/reserve_seat', async (req, res) => {
   try {
-    // const numberOfSeatsToReserve = parseInt(req.query.seats, 10); 
-    // curl "localhost:1245/reserve_seat?seats=3"
-
     const allAvailableSeats = await getCurrentAvailableSeats();
-    
-    if (allAvailableSeats === 0) {
+
+    if (!reservationEnabled || allAvailableSeats === 0) {
       reservationEnabled = false;
       return res.status(403).json({ "status": "Reservations are blocked" });
     }
-    const newAvailableSeats = allAvailableSeats - 1;
 
-    // const newAvailableSeats = allAvailableSeats - numberOfSeatsToReserve;
+    const newAvailableSeats = allAvailableSeats - 1;
 
     await reserveSeat(newAvailableSeats);
 
     const job = queue.create('reserve_seat', {
-      seatNumber: newAvailableSeats
+      reservedSeatsNumber: 1
     }).save((err) => {
       if (err) {
         return res.status(500).json({ "status": "Reservation failed" });
@@ -92,16 +90,49 @@ app.get('/reserve_seat', async (req, res) => {
     });
 
     job.on('failed', (err) => {
-      console.log(`Seat reservation job ${job.id} failed: `, err);
+      console.log(`Seat reservation job ${job.id} failed:`, err);
     });
 
   } catch (err) {
-    console.error('Error retrieving or reserving seats:', err);
-    return res.status(500).json({ error: 'Failed to reserve seat' });
+    console.error('Error processing reservation:', err);
+    res.status(500).json({ error: 'Failed to process reservation' });
   }
 });
 
+// Job processing logic
+queue.process('reserve_seat', async (job, done) => {
+  try {
+    const reservedSeatsNumber = job.data.reservedSeatsNumber;
+    const allAvailableSeats = await getCurrentAvailableSeats();
+    
+    if (allAvailableSeats === 0) {
+      done(new Error("Reservations are blocked"));
+      return;
+    }
 
+    const newAvailableSeats = allAvailableSeats - reservedSeatsNumber;
+
+    if (newAvailableSeats < 0) {
+      done(new Error("Not enough seats available"));
+      return;
+    }
+
+    await reserveSeat(newAvailableSeats);
+    done();
+  } catch (err) {
+    console.error('Error retrieving or reserving seats:', err);
+    done(err);
+  }
+});
+
+app.get('/process', async (req, res) => {
+  try {
+    res.json({ "status": "Queue processing" });
+  } catch (err) {
+    console.error('Error in /process route:', err);
+    res.status(500).json({ error: 'Failed to handle /process route' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
