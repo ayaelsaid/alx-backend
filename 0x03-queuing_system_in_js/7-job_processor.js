@@ -11,10 +11,8 @@ function sendNotification(phoneNumber, message, job, done) {
   // Check if the phone number is blacklisted
   if (blacklisted.includes(phoneNumber)) {
     const errorMsg = `Phone number ${phoneNumber} is blacklisted`;
-    job.fail(new Error(errorMsg));
-    job.save(); // Ensure job state is saved
     console.log(`Notification job ${job.id} failed: ${errorMsg}`);
-    return done(new Error(errorMsg));
+    return done(new Error(errorMsg)); // Fail the job with an error
   }
 
   // Simulate sending notification
@@ -25,9 +23,8 @@ function sendNotification(phoneNumber, message, job, done) {
   setTimeout(() => {
     job.progress(100, 100); // Track progress to 100%
     console.log(`Notification job ${job.id} completed`);
-    job.complete(); // Explicitly mark the job as completed
-    done();
-  }, 1000); // Match the delay from the first snippet
+    done(); // Call done to mark the job as complete
+  }, 1000); // Simulate delay
 }
 
 // Process jobs from the 'push_notification_code_2' queue
