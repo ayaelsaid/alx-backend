@@ -45,21 +45,19 @@ async function getCurrentAvailableSeats() {
 })();
 
 let reservationEnabled = true;
-app.get('/reserve_seat', async (req, res) => {
+
+app.get('/available_seats', async (req, res) => {
   try {
-    const currentSeats = await getCurrentAvailableSeats();
-    if (currentSeats > 0) {
-      await reserveSeat(currentSeats - 1);
-      res.status(200).json({ status: 'Seat reserved' });
-    } else {
-      res.status(404).json({ status: 'No seats available' });
+    const availableSeats = await getCurrentAvailableSeats();
+    if (availableSeats === 0) {
+      reservationEnabled = false;
     }
+    res.json({ numberOfAvailableSeats: availableSeats });
   } catch (err) {
-    console.error('Error processing reservation:', err);
-    res.status(500).json({ status: 'Failed to reserve seat' });
+    console.error('Error retrieving available seats:', err);
+    res.status(500).json({ error: 'Failed to retrieve available seats' });
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
