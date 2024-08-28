@@ -64,10 +64,7 @@ app.get('/available_seats', async (req, res) => {
 
 app.get('/reserve_seat', async (req, res) => {
   try {
-    const allAvailableSeats = await getCurrentAvailableSeats();
-
-    if (!reservationEnabled || allAvailableSeats === 0) {
-      reservationEnabled = false;
+    if (!reservationEnabled) {
       return res.status(403).json({ "status": "Reservations are blocked" });
     }
 
