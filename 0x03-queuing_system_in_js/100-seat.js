@@ -59,6 +59,50 @@ app.get('/available_seats', async (req, res) => {
   }
 });
 
+});
+app.get('/reserve_seat', async (req, res) => {
+  try {
+    // const numberOfSeatsToReserve = parseInt(req.query.seats, 10); 
+    // curl "localhost:1245/reserve_seat?seats=3"
+
+    const allAvailableSeats = await getCurrentAvailableSeats();
+    
+    if (allAvailableSeats === 0) {
+      reservationEnabled = false;
+      return res.status(403).json({ "status": "Reservations are blocked" });
+    }
+    const newAvailableSeats = allAvailableSeats - 1;
+
+    // const newAvailableSeats = allAvailableSeats - numberOfSeatsToReserve;
+
+    await reserveSeat(newAvailableSeats);
+
+    const job = queue.create('reserve_seat', {
+      seatNumber: newAvailableSeats
+    }).save((err) => {
+      if (err) {
+        return res.status(500).json({ "status": "Reservation failed" });
+      } else {
+        return res.json({ "status": "Reservation in process" });
+      }
+    });
+
+    job.on('complete', () => {
+      console.log(`Seat reservation job ${job.id} completed`);
+    });
+
+    job.on('failed', (err) => {
+      console.log(`Seat reservation job ${job.id} failed: `, err);
+    });
+
+  } catch (err) {
+    console.error('Error retrieving or reserving seats:', err);
+    return res.status(500).json({ error: 'Failed to reserve seat' });
+  }
+});
+
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
