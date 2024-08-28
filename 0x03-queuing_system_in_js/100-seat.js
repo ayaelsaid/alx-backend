@@ -68,9 +68,7 @@ app.get('/reserve_seat', async (req, res) => {
       return res.status(403).json({ "status": "Reservations are blocked" });
     }
 
-    const job = queue.create('reserve_seat', {
-      reservedSeatsNumber: 1
-    }).save((err) => {
+    const job = queue.create('reserve_seat').save((err) => {
       if (err) {
         return res.status(500).json({ "status": "Reservation failed" });
       } else {
@@ -94,7 +92,6 @@ app.get('/reserve_seat', async (req, res) => {
 
 queue.process('reserve_seat', async (job, done) => {
   try {
-    const reservedSeatsNumber = job.data.reservedSeatsNumber;
     const allAvailableSeats = await getCurrentAvailableSeats();
     
     if (allAvailableSeats === 0) {
@@ -102,7 +99,7 @@ queue.process('reserve_seat', async (job, done) => {
       return;
     }
 
-    const newAvailableSeats = allAvailableSeats - reservedSeatsNumber;
+    const newAvailableSeats = allAvailableSeats - 1;
 
     if (newAvailableSeats < 0) {
       done(new Error("Not enough seats available"));
