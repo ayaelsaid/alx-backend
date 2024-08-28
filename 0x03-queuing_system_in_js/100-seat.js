@@ -98,6 +98,7 @@ queue.process('reserve_seat', async (job, done) => {
       done(new Error("Reservations are blocked"));
       return;
     }
+console.log('allAvailableSeats in process: ', allAvailableSeats)
 
     const newAvailableSeats = allAvailableSeats - 1;
 
@@ -105,8 +106,10 @@ queue.process('reserve_seat', async (job, done) => {
       done(new Error("Not enough seats available"));
       return;
     }
+console.log('newAvailableSeats is: ', newAvailableSeats)
+   const new = await reserveSeat(newAvailableSeats);
+console.log('arfter set newAvailableSeats is: ', new)
 
-    await reserveSeat(newAvailableSeats);
     done();
   } catch (err) {
     console.error('Error retrieving or reserving seats:', err);
