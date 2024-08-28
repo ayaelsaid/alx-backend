@@ -1,6 +1,3 @@
-
-
-  
 import express from 'express';
 import redis from 'redis';
 import { promisify } from 'util';
