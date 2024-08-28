@@ -3,7 +3,7 @@ import redis from 'redis';
 import { promisify } from 'util';
 
 const app = express();
-const port = 1245;
+const PORT = 1245;
 
 const listProducts = [
   { Id: 1, name: 'Suitcase 250', price: 50, stock: 4 },
