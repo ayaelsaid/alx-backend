@@ -22,7 +22,6 @@ function sendNotification(phoneNumber, message, job, done) {
   // Simulate success
   setTimeout(() => {
     job.progress(100, 100); // Track progress to 100%
-    console.log(`Notification job ${job.id} completed`);
     done(); // Call done to mark the job as complete
   }, 1000); // Simulate delay
 }
