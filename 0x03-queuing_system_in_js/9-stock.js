@@ -101,3 +101,4 @@ app.get('/reserve_product/:itemId', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+export default app;
