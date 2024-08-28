@@ -73,9 +73,6 @@ app.get('/reserve_seat', async (req, res) => {
       return res.status(403).json({ "status": "Reservations are blocked" });
     }
 
-    const newAvailableSeats = allAvailableSeats - 1;
-    await reserveSeat(newAvailableSeats);
-
     const job = queue.create('reserve_seat', {
       reservedSeatsNumber: 1
     }).save((err) => {
