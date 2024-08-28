@@ -21,24 +21,27 @@ jobs.forEach(jobData => {
   const job = queue.create('push_notification_code_2', {
     phoneNumber: jobData.phoneNumber,
     message: jobData.message
-  }).save((err) => {
+  });
+
+  // Attach event listeners
+  job.on('progress', (progress) => {
+    console.log(`Notification job ${job.id} ${progress}% complete`);
+  });
+
+  job.on('complete', () => {
+    console.log(`Notification job ${job.id} completed`);
+  });
+
+  job.on('failed', (errorMessage) => {
+    console.error(`Notification job ${job.id} failed: ${errorMessage}`);
+  });
+
+  // Save the job
+  job.save((err) => {
     if (err) {
       console.error('Error creating job:', err);
     } else {
       console.log('Notification job created:', job.id);
-
-      // Attach event listeners after the job is saved
-      job.on('progress', (progress) => {
-        console.log(`Notification job ${job.id} ${progress}% complete`);
-      });
-
-      job.on('complete', () => {
-        console.log(`Notification job ${job.id} completed`);
-      });
-
-      job.on('failed', (errorMessage) => {
-        console.error(`Notification job ${job.id} failed: ${errorMessage}`);
-      });
     }
   });
 });
