@@ -98,3 +98,6 @@ app.get('/reserve_product/:itemId', async (req, res) => {
     res.status(500).json({ status: 'Failed to process reservation' });
   }
 });
+app.listen(PORT, () => {
+  console.log(Server running at http://localhost:${port});
+});
