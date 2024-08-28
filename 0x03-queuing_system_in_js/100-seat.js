@@ -30,12 +30,14 @@ async function getCurrentAvailableSeats() {
   }
 }
 
+// Handle Redis errors
+client.on('error', (err) => {
+  console.error('Redis client error:', err);
+});
+
+// Initialize application
 (async () => {
   try {
-    client.on('error', (err) => {
-      console.error('Redis client error:', err);
-    });
-
     await reserveSeat(50);
     console.log('Application started. Number of available seats set to 50.');
   } catch (err) {
@@ -72,7 +74,6 @@ app.get('/reserve_seat', async (req, res) => {
     }
 
     const newAvailableSeats = allAvailableSeats - 1;
-
     await reserveSeat(newAvailableSeats);
 
     const job = queue.create('reserve_seat', {
