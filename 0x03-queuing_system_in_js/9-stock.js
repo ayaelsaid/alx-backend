@@ -12,7 +12,10 @@ const listProducts = [
   { Id: 4, name: 'Suitcase 1050', price: 550, stock: 5 }
 ];
 
-const client = redis.createClient();
+const client = const client = redis.createClient({
+  host: 'localhost',
+  port: 6379
+});
 
 client.on('error', (err) => {
   console.error('Redis client error:', err);
