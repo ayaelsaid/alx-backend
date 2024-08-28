@@ -42,7 +42,7 @@ async function getCurrentReservedStockById(itemId) {
   }
 }
 
-app.get('/products', (req, res) => {
+app.get('/list_products', (req, res) => {
   const transformedProducts = listProducts.map(product => ({
     itemId: product.Id,
     itemName: product.name,
